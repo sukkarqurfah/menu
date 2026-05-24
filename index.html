@@ -1061,10 +1061,8 @@
   }
 
   .cart-total-label { font-size: 14px; color: var(--text-light); opacity: 0.7; }
-
   .cart-total-val { font-size: 26px; font-weight: 900; color: var(--gold); }
 
-  /* WhatsApp order button */
   .btn-order-whatsapp {
     width: 100%;
     background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
@@ -1103,6 +1101,124 @@
     justify-content: center;
     gap: 5px;
   }
+
+  /* ===== ADMIN LOGIN MODAL ===== */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .login-overlay.open { opacity: 1; pointer-events: all; }
+
+  .login-box {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 36px 30px;
+    width: 380px;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 80px rgba(201,168,76,0.1);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .login-overlay.open .login-box { transform: translateY(0) scale(1); }
+
+  .login-icon {
+    width: 60px; height: 60px;
+    margin: 0 auto 20px;
+    background: rgba(201,168,76,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+
+  .login-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .login-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    opacity: 0.6;
+    margin-bottom: 24px;
+  }
+
+  .login-input {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    padding: 13px 16px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 3px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 8px;
+  }
+
+  .login-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+
+  .login-input::placeholder { letter-spacing: 1px; opacity: 0.4; }
+
+  .login-error {
+    font-size: 12px;
+    color: #ef4444;
+    min-height: 18px;
+    margin-bottom: 12px;
+    transition: opacity 0.2s;
+  }
+
+  .login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), #a07830);
+    color: var(--dark);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 13px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .login-cancel {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    opacity: 0.5;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .login-cancel:hover { opacity: 1; }
 
   /* Toast */
   .toast {
@@ -1173,7 +1289,7 @@
           <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <button class="btn-admin" onclick="showPage('admin')">
+      <button class="btn-admin" onclick="openAdminLogin()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M7 1L8.5 5.5H13L9.5 8L11 12.5L7 9.5L3 12.5L4.5 8L1 5.5H5.5L7 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
         </svg>
@@ -1286,11 +1402,11 @@
 <!-- ADMIN PAGE -->
 <div id="page-admin" class="page">
   <div class="admin-header">
-    <button class="menu-back-btn" onclick="showPage('home')">
+    <button class="menu-back-btn" onclick="logoutAdmin()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      رجوع
+      خروج
     </button>
     <div class="admin-title">لوحة ادارة القائمة</div>
     <div style="width:80px"></div>
@@ -1376,6 +1492,26 @@
   </div>
 </div>
 
+<!-- ADMIN LOGIN MODAL -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect x="6" y="12" width="16" height="12" rx="2" stroke="#c9a84c" stroke-width="1.8"/>
+        <path d="M10 12V8C10 5.79 11.79 4 14 4C16.21 4 18 5.79 18 8V12" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="14" cy="18" r="2" fill="#c9a84c"/>
+      </svg>
+    </div>
+    <div class="login-title">دخول لوحة الادارة</div>
+    <div class="login-desc">هذه المنطقة خاصة بصاحب المطعم فقط</div>
+    <input type="password" class="login-input" id="admin-password"
+      placeholder="ادخل كلمة المرور" onkeydown="if(event.key==='Enter')checkAdminLogin()" />
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" onclick="checkAdminLogin()">دخول</button>
+    <button class="login-cancel" onclick="closeAdminLogin()">إلغاء</button>
+  </div>
+</div>
+
 <!-- CART PANEL -->
 <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
 <div class="cart-panel" id="cart-panel">
@@ -1438,6 +1574,47 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ====== ADMIN SECURITY ======
+  // ⚠️ غيّر كلمة المرور هنا إلى ما تريد
+  const ADMIN_PASSWORD = 'sukkar2024';
+  let isAdminLoggedIn = sessionStorage.getItem('adminAuth') === 'true';
+
+  function openAdminLogin() {
+    if (isAdminLoggedIn) {
+      showPage('admin');
+      return;
+    }
+    document.getElementById('login-overlay').classList.add('open');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').textContent = '';
+    setTimeout(() => document.getElementById('admin-password').focus(), 300);
+  }
+
+  function closeAdminLogin() {
+    document.getElementById('login-overlay').classList.remove('open');
+  }
+
+  function checkAdminLogin() {
+    const input = document.getElementById('admin-password').value;
+    if (input === ADMIN_PASSWORD) {
+      isAdminLoggedIn = true;
+      sessionStorage.setItem('adminAuth', 'true');
+      closeAdminLogin();
+      showPage('admin');
+    } else {
+      document.getElementById('login-error').textContent = 'كلمة المرور غير صحيحة!';
+      document.getElementById('admin-password').value = '';
+      document.getElementById('admin-password').focus();
+    }
+  }
+
+  function logoutAdmin() {
+    isAdminLoggedIn = false;
+    sessionStorage.removeItem('adminAuth');
+    showPage('home');
+    showToast('تم تسجيل الخروج');
+  }
+
   // ====== DATA ======
   let items = JSON.parse(localStorage.getItem('restaurant_items') || '[]');
   let cart = {};
@@ -1470,6 +1647,12 @@
 
   // ====== PAGE NAV ======
   function showPage(name) {
+    // Protect admin page
+    if (name === 'admin' && !isAdminLoggedIn) {
+      openAdminLogin();
+      return;
+    }
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     window.scrollTo(0, 0);
@@ -1717,12 +1900,10 @@
     const cartIds = Object.keys(cart).filter(id => cart[id] > 0);
     let totalVal = 0;
 
-    // Header
     let msg = 'السلام عليكم\n';
     msg += 'طلب جديد من سُكر وقرفة\n';
     msg += '--------------------------------\n';
 
-    // Items
     cartIds.forEach(id => {
       const item = items.find(i => i.id == id);
       if (!item) return;
@@ -1754,11 +1935,9 @@
 
     const message = buildWhatsAppMessage();
     const encoded = encodeURIComponent(message);
-    // Clean the number (remove spaces, dashes)
     const cleanNum = wa.replace(/[\s\-\+]/g, '');
     const waURL = `https://wa.me/${cleanNum}?text=${encoded}`;
 
-    // Reset cart and UI
     cart = {};
     updateCartUI();
     toggleCart();
